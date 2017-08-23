@@ -12,28 +12,29 @@
 
 <div class="game-canvas">
 
-    <h1 class="main-title"><?php echo __( 'Football stars Top Trumps', 'tsg_top_trumps' ); ?></h1>
+    <h1 class="main-title"><?php echo __( 'Football stars Top Trumps', 'ftbll_top_trumps' ); ?></h1>
 
-    <button class="start-game"><?php echo __( 'Play game', 'tsg_top_trumps' ); ?></button>
+    <button data-bind="click: startGame"
+            class="start-game"><?php echo __( 'Play game', 'ftbll_top_trumps' ); ?></button>
 
     <div class="response"></div>
 
-    <div class="cards-holder">
-        <div class="card">
-            <div class="card-inner">
+    <div class="cards-holder" data-bind="css: { active: gameOn }, foreach: cards">
+        <div data-bind="css: type" class="card">
+            <div data-bind="css: { flipped: isVisible }" class="card-inner">
                 <div class="card-face card-face--back">
                     <img class="top-trumps-logo" src="<?php echo plugin_dir_url( dirname( __FILE__ ) ) . 'assets/Top_Trumps.svg'; ?>">
                 </div>
                 <div class="card-face card-face--front">
-                    <h2 class="card-name"></h2>
-                    <img class="card-image">
-                    <ul class="card-list">
+                    <h2 data-bind="text: name" class="card-name"></h2>
+                    <img data-bind="attr: { src: image }" class="card-image">
+                    <ul data-bind="foreach: attributes" class="card-list">
                         <li class="card-prop">
-                            <span></span>
-                            <span></span>
+                            <span data-bind="text: label"></span>
+                            <span data-bind="text: value"></span>
                         </li>
                     </ul>
-                    <div class="card-description"></div>
+                    <div data-bind="html: description" class="card-description"></div>
                 </div>
             </div>
         </div>
