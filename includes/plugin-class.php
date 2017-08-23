@@ -14,6 +14,16 @@ class Top_Trumps {
 	const FIELDS_PREFIX = '_ftlltp_';
 
 	/**
+	 * Custom endpoint namespace
+	 */
+	const REST_ENDPOINT_NAMESPACE = 'top_trumps/';
+
+	/**
+	 * Custom endpoint name
+	 */
+	const REST_ENDPOINT_NAME = 'cards/';
+
+	/**
 	 * Return custom meta fields attributes
 	 */
 	public static function get_attributes()
@@ -181,5 +191,66 @@ class Top_Trumps {
 
 			update_post_meta( $post_ID, $field, $data );
 		}
+	}
+
+	/**
+	 * Add our new route to the WP REST API
+	 */
+	public function register_custom_endpoint()
+	{
+		$args = array(
+			'methods' => 'GET',
+			'callback' => array( $this, 'get_cards_api' ),
+		);
+
+		// Add our custom route to the WP REST API
+		register_rest_route( self::REST_ENDPOINT_NAMESPACE, self::REST_ENDPOINT_NAME, $args );
+	}
+
+	/**
+	 * Callback for WP REST API custom endpoint registration
+	 */
+	public function get_cards_api( \WP_REST_Request $request )
+	{
+		// Prepare the returnable array
+		$json_return = array();
+
+		// Make WP_Query call
+		$args = array(
+			'post_type'      => self::CPT_NAME,
+			'posts_per_page' => 2,
+			'orderby'        => 'rand',
+		);
+		$query = new \WP_Query( $args );
+
+		// If there are posts, build the return array
+		if( $query->have_posts() ) :
+			while( $query->have_posts() ) : $query->the_post();
+				// Prepare an array for card attributes
+				$attributes = array();
+
+				// Push all the attributes into the array
+				foreach( self::get_attributes() as $key => $entries ) {
+					$value = get_post_meta( get_the_ID(), $key, true );
+					$attributes[] = array(
+						'key'   => $key,
+						'label' => $entries['label'],
+						'value' => $value
+					);
+				}
+
+				// Build the return array
+				$json_return[] = array(
+					'id'          => get_the_ID(),
+					'name'        => get_the_title(),
+					'image'       => get_the_post_thumbnail_url( get_the_ID(), 'full' ),
+					'attributes'  => $attributes,
+					'description' => get_the_content()
+				);
+			endwhile;
+		endif;
+
+		// Return the required information
+		return $json_return;
 	}
 }

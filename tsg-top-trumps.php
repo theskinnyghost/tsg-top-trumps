@@ -30,3 +30,4 @@ $TSG_Top_Trumps = new TSG\WordPress\Plugin\Top_Trumps();
 add_action( 'init', array( $TSG_Top_Trumps, 'register_post_type' ) );
 add_action( 'add_meta_boxes', array( $TSG_Top_Trumps, 'add_metabox' ) );
 add_action( 'save_post', array( $TSG_Top_Trumps, 'save_post' ) );
+add_action( 'rest_api_init', array( $TSG_Top_Trumps, 'register_custom_endpoint' ) );
