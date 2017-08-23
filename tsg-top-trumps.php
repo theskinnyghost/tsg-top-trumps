@@ -13,6 +13,9 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+define( 'FTLLTP_NONCE_ACTION', '_tsgtt_save_fields_to_db' );
+define( 'FTLLTP_NONCE_NAME',  basename(__FILE__) );
+
 /**
  * The core plugin class that is used to define
  * custom post types and custom meta fields
@@ -25,3 +28,5 @@ $TSG_Top_Trumps = new TSG\WordPress\Plugin\Top_Trumps();
  * Define Admin hooks
  */
 add_action( 'init', array( $TSG_Top_Trumps, 'register_post_type' ) );
+add_action( 'add_meta_boxes', array( $TSG_Top_Trumps, 'add_metabox' ) );
+add_action( 'save_post', array( $TSG_Top_Trumps, 'save_post' ) );

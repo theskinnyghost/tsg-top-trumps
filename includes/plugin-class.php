@@ -9,6 +9,44 @@ class Top_Trumps {
 	const CPT_NAME = 'fttptr_card';
 
 	/**
+	 * Custom fields prefix
+	 */
+	const FIELDS_PREFIX = '_ftlltp_';
+
+	/**
+	 * Return custom meta fields attributes
+	 */
+	public static function get_attributes()
+	{
+		return array(
+			self::FIELDS_PREFIX . 'height'    => array(
+				'label'         => 'Height (cm)',
+				'description'   => __( "Insert player's height value in cm.", 'tsg_top_trumps' ),
+			),
+			self::FIELDS_PREFIX . 'apps'      => array(
+				'label'         => 'Apps',
+				'description'   => __( 'Insert the number of appearances for the player.', 'tsg_top_trumps' ),
+			),
+			self::FIELDS_PREFIX . 'goals'     => array(
+				'label'         => 'Goals',
+				'description'   => __( 'Insert the numbers of goals scored by the player.', 'tsg_top_trumps' ),
+			),
+			self::FIELDS_PREFIX . 'trophies'  => array(
+				'label'         => 'Trophies',
+				'description'   => __( 'Insert the number of trophies won by the player.', 'tsg_top_trumps' ),
+			),
+			self::FIELDS_PREFIX . 'yob'       => array(
+				'label'         => 'Year of Birth',
+				'description'   => __( 'Insert a date of birth for the player.', 'tsg_top_trumps' ),
+			),
+			self::FIELDS_PREFIX . 'estvl'     => array(
+				'label'         => "Est'd value",
+				'description'   => __( 'Insert the estimated value for the player.', 'tsg_top_trumps' ),
+			),
+		);
+	}
+
+	/**
 	 * Register custom post type
 	 */
 	public function register_post_type()
@@ -50,5 +88,98 @@ class Top_Trumps {
 		);
 
 		register_post_type( self::CPT_NAME, $args );
+	}
+
+	/**
+	 * Add our metabox to our CPT screen
+	 *
+	 */
+	public function add_metabox()
+	{
+		add_meta_box(
+			'fttp_metabox',
+			__( 'Card Details', 'tsg_top_trumps' ),
+			[ $this, 'draw_metabox' ],
+			self::CPT_NAME,
+			'normal',
+			'high'
+		);
+	}
+
+	/**
+	 * Print HTML for the metabox
+	 *
+	 */
+	public function draw_metabox( $post )
+	{
+		wp_nonce_field( FTLLTP_NONCE_NAME, FTLLTP_NONCE_ACTION );
+		?>
+        <table class="form-table">
+            <tbody>
+			<?php foreach( self::get_attributes() as $field_name => $fields ) :
+				$value = get_post_meta( $post->ID, $field_name, true );
+				?>
+                <tr>
+                    <th scope="row">
+                        <label for="<?php echo $field_name; ?>"><?php echo $fields['label']; ?></label>
+                    </th>
+                    <td>
+                        <input
+                                class="code large-text"
+                                type="text"
+                                name="<?php echo $field_name; ?>"
+                                id="<?php echo $field_name; ?>"
+                                value="<?php echo $value; ?>">
+                        <p class="description"><?php echo $fields['description']; ?></p>
+                    </td>
+                </tr>
+			<?php endforeach; ?>
+            </tbody>
+        </table>
+		<?php
+	}
+
+	/**
+	 * Sanitize and save custom fields to DB when form is submitted
+	 *
+	 */
+	public function save_post( $post_ID )
+	{
+		// Check if our nonce is set and verify that the nonce is valid.
+		if ( ! isset( $_POST[ FTLLTP_NONCE_ACTION ] )
+		     || ! wp_verify_nonce( $_POST[ FTLLTP_NONCE_ACTION ], FTLLTP_NONCE_NAME ) ) {
+			return $post_ID;
+		}
+
+		/*
+		 * If this is an autosave, our form has not been submitted,
+		 * so we don't want to do anything.
+		 */
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return $post_ID;
+		}
+
+		/**
+		 * If this is an Ajax request, our form has not been submitted,
+		 * so we don't want to do anything.
+		 */
+		if( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			return $post_ID;
+		}
+
+		// Check the user's permissions.
+		if ( ! current_user_can( 'edit_post', $post_ID ) ) {
+			return $post_ID;
+		}
+
+		// Get all custom fields keys
+		$fields = array_keys( self::get_attributes() );
+
+		// Sanitize field and save it to DB
+		foreach( $fields as $field ) {
+			$data = absint( $_POST[ $field ] );
+
+			update_post_meta( $post_ID, $field, $data );
+		}
 	}
 }
