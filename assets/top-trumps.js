@@ -71,6 +71,21 @@ function TopTrumpsViewModel() {
     };
 
     /**
+     * Give the user the possibility to restart the game with new cards
+     */
+    self.restartGame = function() {
+        // Reset all values to default
+        self.propChosen("");
+        self.opponent.isVisible(false);
+        self.gameEnd(false);
+        self.response("");
+        self.cards([]);
+
+        // Restart the game
+        self.startGame();
+    };
+
+    /**
      * Compare the chosen value to declare the winner
      */
     self.compareValue = function(parent_ID, currentItem, event) {

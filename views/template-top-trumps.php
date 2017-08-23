@@ -14,8 +14,10 @@
 
     <h1 class="main-title"><?php echo __( 'Football stars Top Trumps', 'ftbll_top_trumps' ); ?></h1>
 
-    <button data-bind="click: startGame"
-            class="start-game"><?php echo __( 'Play game', 'ftbll_top_trumps' ); ?></button>
+    <button data-bind="click: !gameOn() ? startGame : restartGame, text: !gameOn() ?
+                '<?php echo __( 'Play game', 'ftbll_top_trumps' ); ?>' :
+                    '<?php echo __( 'Play again', 'ftbll_top_trumps' ); ?>'"
+            class="start-game"></button>
 
     <div data-bind="css: { active: response() }, text: response" class="response"></div>
 
