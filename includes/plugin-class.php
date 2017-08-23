@@ -235,7 +235,7 @@ class Top_Trumps {
 					$attributes[] = array(
 						'key'   => $key,
 						'label' => $entries['label'],
-						'value' => $value
+						'value' => absint( $value )
 					);
 				}
 
