@@ -92,25 +92,31 @@ function TopTrumpsViewModel() {
         if(self.gameEnd())
             return;
 
+        // Get opponent attributes array
+        var opponentAttributes = self.opponent.attributes;
+
+        // Store the chosen attribute
         self.propChosen(currentItem.key);
 
-        setTimeout(function() {
-            var opponentAttributes = self.opponent.attributes;
+        // Show the opponent character
+        self.opponent.isVisible(true);
 
-            self.opponent.isVisible(true);
-
-            for(var i = 0, l = opponentAttributes.length; i < l; i++) {
-                if(opponentAttributes[i].key === currentItem.key){
-                    console.log(currentItem.value, opponentAttributes[i].value);
-                    if(currentItem.value > opponentAttributes[i].value)
-                        self.response(self.player.name + ' win!');
-                    else
-                        self.response(self.player.name + ' lose!');
+        /**
+         * Iterate attributes array to find the chosen attribute value
+         * and compare it to declare the winner.
+         */
+        for(var i = 0, l = opponentAttributes.length; i < l; i++) {
+            if(opponentAttributes[i].key === currentItem.key){
+                if(currentItem.value > opponentAttributes[i].value) {
+                    self.response(self.player.name + ' win!');
+                } else {
+                    self.response(self.player.name + ' lose!');
                 }
             }
+        }
 
-            self.gameEnd(true);
-        }, 1000);
+        // End the game
+        self.gameEnd(true);
     };
 };
 
