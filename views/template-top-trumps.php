@@ -17,7 +17,7 @@
     <button data-bind="click: startGame"
             class="start-game"><?php echo __( 'Play game', 'ftbll_top_trumps' ); ?></button>
 
-    <div class="response"></div>
+    <div data-bind="css: { active: response() }, text: response" class="response"></div>
 
     <div class="cards-holder" data-bind="css: { active: gameOn }, foreach: cards">
         <div data-bind="css: type" class="card">
@@ -29,7 +29,8 @@
                     <h2 data-bind="text: name" class="card-name"></h2>
                     <img data-bind="attr: { src: image }" class="card-image">
                     <ul data-bind="foreach: attributes" class="card-list">
-                        <li class="card-prop">
+                        <li data-bind="click: !$parent.gameEnd ? compareValue.bind($data, $parent.id) : null,
+                            css: { active: key == propChosen()}" class="card-prop">
                             <span data-bind="text: label"></span>
                             <span data-bind="text: value"></span>
                         </li>

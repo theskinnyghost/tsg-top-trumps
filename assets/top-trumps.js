@@ -69,6 +69,34 @@ function TopTrumpsViewModel() {
         self.getCards();
         self.gameOn(true);
     };
+
+    /**
+     * Compare the chosen value to declare the winner
+     */
+    self.compareValue = function(parent_ID, currentItem, event) {
+        if(self.gameEnd())
+            return;
+
+        self.propChosen(currentItem.key);
+
+        setTimeout(function() {
+            var opponentAttributes = self.opponent.attributes;
+
+            self.opponent.isVisible(true);
+
+            for(var i = 0, l = opponentAttributes.length; i < l; i++) {
+                if(opponentAttributes[i].key === currentItem.key){
+                    console.log(currentItem.value, opponentAttributes[i].value);
+                    if(currentItem.value > opponentAttributes[i].value)
+                        self.response(self.player.name + ' win!');
+                    else
+                        self.response(self.player.name + ' lose!');
+                }
+            }
+
+            self.gameEnd(true);
+        }, 1000);
+    };
 };
 
 ko.applyBindings(TopTrumpsViewModel);
