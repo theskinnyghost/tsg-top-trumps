@@ -253,4 +253,59 @@ class Top_Trumps {
 		// Return the required information
 		return $json_return;
 	}
+
+	/**
+	 * Show our custom template for the game page
+	 */
+	public function view_plugin_template( $template )
+	{
+		// Get global post
+		global $post;
+
+		// Return template if post is empty
+		if ( ! $post ) {
+			return $template;
+		}
+
+		// Return our template if the post slug is equal to game
+		if( "game" === $post->post_name ) {
+
+			$file = plugin_dir_path( dirname( __FILE__ ) ) . "views/template-top-trumps.php";
+
+			// Just to be safe, we check if the file exist first
+			if ( file_exists( $file ) ) {
+				return $file;
+			} else {
+				return $template;
+			}
+		}
+
+		return $template;
+	}
+
+	/**
+	 * Enqueue custom scripts and styles
+	 */
+	public function enqueue_scripts()
+	{
+		wp_register_style( '_ftlltp_style', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/top-trumps.css' );
+		wp_register_script(
+			'_ftlltp_knockout',
+			plugin_dir_url( dirname( __FILE__ ) ) . 'assets/knockout.js',
+			false,
+			false,
+			true
+		);
+		wp_register_script(
+			'_ftlltp_script',
+			plugin_dir_url( dirname( __FILE__ ) ) . 'assets/top-trumps.js',
+			[ 'jquery', '_ftlltp_knockout' ],
+			false,
+			true
+		);
+
+		wp_deregister_style( 'twentyseventeen-style' );
+		wp_enqueue_style( '_ftlltp_style' );
+		wp_enqueue_script( '_ftlltp_script' );
+	}
 }
