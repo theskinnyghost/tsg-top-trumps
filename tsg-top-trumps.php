@@ -12,3 +12,16 @@
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
+
+/**
+ * The core plugin class that is used to define
+ * custom post types and custom meta fields
+ */
+require plugin_dir_path( __FILE__ ) . 'includes/plugin-class.php';
+
+$TSG_Top_Trumps = new TSG\WordPress\Plugin\Top_Trumps();
+
+/**
+ * Define Admin hooks
+ */
+add_action( 'init', array( $TSG_Top_Trumps, 'register_post_type' ) );
